@@ -1,5 +1,6 @@
 import User from "./../models/user.model.js"
 import genToken from "../config/token.js";
+import bcrypt from "bcryptjs";
 
 
 //..................Controller for user sign up..................
