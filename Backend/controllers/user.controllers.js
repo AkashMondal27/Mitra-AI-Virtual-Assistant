@@ -1,6 +1,6 @@
 //take the iser id from "userId" , user find . return 
 
-import User from "../models/user.model"
+import User from "../models/user.model.js"
 
 export const getCurrentUser = async (req, res) => {
     try {
