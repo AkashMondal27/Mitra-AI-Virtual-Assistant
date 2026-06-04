@@ -10,14 +10,20 @@ import image7 from "../assets/image7.jpeg"
 import { RiImageAddLine } from "react-icons/ri";
 import { FaArrowRightLong } from "react-icons/fa6";
 import { useState } from 'react';
+import { useContext } from 'react';
+import { userDataContext } from '../context/UserContext';
 
 
 
 function  Customize  ()  {
 
     //input of the Image 
-    const[frontendImage,setFrontendImage]=useState(null);
-    const[backendImage,setBackendImage]=useState(null);
+    const{serverUrl,
+       userData,setUserData,
+       frontendImage,setFrontendImage,
+       backendImage,setBackendImage,
+       selectedImage,setSelectedImage}=useContext(userDataContext);
+   
     const inputImage=useRef()
 
     //function to handle the image when the user select it

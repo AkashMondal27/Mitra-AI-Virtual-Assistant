@@ -12,6 +12,11 @@ const UserContext = ({ children }) => {
 
     const [userData,setUserData]=useState(null);
 
+    //we will use these two states to show the image that the user select in the customize page before sending it to the backend
+     const[frontendImage,setFrontendImage]=useState(null);
+     const[backendImage,setBackendImage]=useState(null);
+     const [selectedImage, setSelectedImage] = useState(null);
+
     const handleCurrentUser=async()=>{
         try{
             const result =await axios.get(`${serverUrl}/api/user/current`,{withCredentials:true})
@@ -27,7 +32,11 @@ const UserContext = ({ children }) => {
     },[])
 
     const value={
-       serverUrl,userData,setUserData
+       serverUrl,
+       userData,setUserData,
+       frontendImage,setFrontendImage,
+       backendImage,setBackendImage,
+       selectedImage,setSelectedImage
     }
     return (
         <div>
