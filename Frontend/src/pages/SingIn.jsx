@@ -30,6 +30,7 @@ function SingIn  (){
       // console.log(result)
       setUserData(result.data);
       setLoading(false);
+      navigate("/")
     } catch (error) {
       console.log(error)
       setUserData(null)

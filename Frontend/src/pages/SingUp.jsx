@@ -30,6 +30,7 @@ function SingUp  (){
       // console.log(result)
       setUserData(result.data)
       setLoading(false);  
+      navigate("/customize")
     } catch (error) {
       console.log(error)
       setUserData(null);
