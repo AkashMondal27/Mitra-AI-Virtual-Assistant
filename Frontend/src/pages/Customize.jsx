@@ -75,7 +75,7 @@ function  Customize  ()  {
                
         </div> 
             {/* button for next  */}
-        <button className=' group min-w-30 h-10  mt-5 bg-orange-200 rounded-full text-amber-800 text-xl cursor-pointer 
+        <button className=' group min-w-30 h-10  mt-5 bg-orange-100 rounded-full text-amber-800 text-xl cursor-pointer 
                                      hover:bg-orange-300 shadow-2xl shadow-amber-100  flex  gap-1.5 justify-center items-center' >
                     Next <FaArrowRightLong className="text-amber-800 transition-transform duration-300 group-hover:translate-x-1 " />
 
