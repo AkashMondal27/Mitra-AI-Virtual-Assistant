@@ -2,15 +2,15 @@ import{v2 as cloudinary} from 'cloudinary'
 import fs from 'fs' ; //use to dlt the result from local storage after uploading to cloudinary
 
 const uploadOnCloudinary=async(filePath)=>{
-  cloudinary.config({
+  try{cloudinary.config({
     cloud_name:process.env.CLOUDINARY_CLOUD_NAME,
     api_key:process.env.CLOUDINARY_API_KEY,
     api_secret:process.env.CLOUDINARY_API_SECRET
   })
-}
+
 
 //upload an image
-try{
+
     const uploadResult=  await cloudinary.uploader.upload(filePath)
     fs.unlinkSync(filePath) //delete the file from local storage after uploading to cloudinary
     return uploadResult.secure_url
@@ -20,7 +20,7 @@ try{
      return res.status(500).json({message:"Error uploading image"})
     console.error("Error uploading to Cloudinary:",error)
 }
-
+};
 export default uploadOnCloudinary ;
 
 /* 

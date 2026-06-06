@@ -13,6 +13,8 @@ import { useState } from 'react';
 import { useContext } from 'react';
 import { userDataContext } from '../context/UserContext';
 import { useNavigate } from 'react-router-dom';
+import { IoArrowBackSharp } from "react-icons/io5";
+
 
 
 
@@ -37,6 +39,26 @@ function  Customize  ()  {
   return (
     <div className='w-full min-h-screen bg-linear-to-t from-[black] to-[#010b38] flex 
                    justify-center items-center md:py-3 p-0 flex-col ' >
+
+
+            <button className="absolute md:top-8 md:left-8
+                               top-10 left-4
+                             text-white cursor-pointer 
+                               md:w-9 md:h-9 w-8 h-8
+                               flex justify-center 
+                               items-center rounded-full
+                               bg-linear-to-r from-blue-700 to-blue-1000                                       
+                               font-semibold
+                               text-lg
+                               border-2 border-blue-900
+                               shadow-lg shadow-cyan-500/30
+                               hover:shadow-cyan-500/50
+                               hover:scale-105
+                               transition-all duration-100
+                               "
+                    onClick={()=>navigate("/")}>
+                <IoArrowBackSharp  />       
+            </button>
 
         <h1 className=' text-center text-blue-400 text-[30px] font-semibold mb-5  '>
               Select your  <br className="block sm:hidden" />
@@ -80,10 +102,34 @@ function  Customize  ()  {
         </div> 
         {/* button for next  */}
             {selectedImage && 
-             <button className=' group min-w-30 h-10  mt-5 bg-orange-100 rounded-full text-amber-800 text-xl cursor-pointer 
-                                     hover:bg-orange-300 shadow-2xl shadow-amber-100  flex  gap-1.5 justify-center items-center' 
-                     onClick={()=>navigate('/customize2')}                >
-                    Next <FaArrowRightLong className="text-amber-800 transition-transform duration-300 group-hover:translate-x-1 " />
+             <button className="
+            group
+            w-[90%]
+            max-w-25
+            h-10
+            sm:h-11
+            md:mt-5
+            mt-8
+            rounded-full
+            bg-linear-to-r from-blue-700 to-blue-1000
+            border-2 border-blue-900
+           text-white          
+            text-md
+            cursor-pointer
+            shadow-lg shadow-cyan-500/30
+            hover:shadow-cyan-500/50
+            hover:scale-105
+            transition-all duration-100
+            flex
+            gap-2
+            justify-center
+            items-center
+            mx-auto
+             "
+
+             onClick={()=>navigate('/customize2')}                >
+               Next <FaArrowRightLong className=
+                          "text-amber-800 transition-transform duration-300 group-hover:translate-x-1 " />
 
            </button> }
        

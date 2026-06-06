@@ -25,10 +25,14 @@ const Card = ({ image }) => {
         transition-all
         duration-300
       ${selectedImage == image ? "border-2 border-white shadow-2xl shadow-blue-900" : null}`}
-      onClick={() => setSelectedImage(image)} > {/*when the user click on the card we will set the selected 
-                                               image in the context to show it in the customize page and 
+      onClick={() => {setSelectedImage(image)    > {/*when the user click on the card we will set the selected 
+                                                    image in the context to show it in the customize page and 
                                                send it to the backend when the user click on the next button */}
+                      setBackendImage(null)
+                      setFrontendImage(null)                        
     
+        
+      }} >
       <img
         src={image}
         alt=""

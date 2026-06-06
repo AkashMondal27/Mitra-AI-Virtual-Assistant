@@ -1,20 +1,64 @@
 import React from 'react'
-import { FaArrowRightLong } from "react-icons/fa6";
 import { useContext } from 'react';
 import { userDataContext } from '../context/UserContext';
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
+import axios from 'axios';
+import { useEffect } from 'react';
+import Card from '../components/Card';
+import { IoArrowBackSharp } from "react-icons/io5";
+
 
 const Customize2 = () => {
    
-    const{userData}=useContext(userDataContext);
-    const [assistantName ,setAssistantName]=useState(userData?.assistantName ||"" );
+    const{userData, backendImage, selectedImage,serverUrl ,setUserData}=useContext(userDataContext);
+    const [assistantName ,setAssistantName]=useState(userData?.AssistantName ||"" );
+    const [loading, setLoading]=useState(false);
+    const navigate=useNavigate();
+
+    const handleUpdateAssistant= async()=>{
+      try{
+        let formData=new FormData();  //we will use formData to send the image file to the backend
+        formData.append("assistantName",assistantName);
+        if(backendImage){
+          formData.append("assistantImage",backendImage);
+        } else{
+          formData.append("imageUrl",selectedImage); //if the user select one of the preloaded images we will send the url of the image to the backend to save it in the database
+        }
+         const result = await axios.post(`${serverUrl}/api/user/update`, formData, { withCredentials: true });
+
+         console.log(result.data);
+         setUserData(result.data); //update the user data in the context with the new assistant name and image
+
+      }catch(error){
+        console.log(error);
+      }
+    }
+
 
     return (
         <div className='w-full min-h-screen bg-linear-to-t from-[black] to-[#010b38] flex 
-                   justify-center items-center md:py-3 p-0 flex-col ' >
-
-            <h1 className=' text-center text-blue-400 text-[30px] font-semibold  mb-5  '>
+                   justify-center items-center md:py-3 p-0 flex-col  ' >
+            
+            <button className="absolute md:top-8 left-8
+                               top-18
+                             text-white cursor-pointer 
+                               w-9 h-9 flex justify-center 
+                               items-center rounded-full
+                               bg-linear-to-r from-blue-700 to-blue-1000                                       
+                               font-semibold
+                               text-lg
+                               border-2 border-blue-900
+                               shadow-lg shadow-cyan-500/30
+                               hover:shadow-cyan-500/50
+                               hover:scale-105
+                               transition-all duration-100
+                               "
+                    onClick={()=>navigate("/customize")}>
+                <IoArrowBackSharp  />       
+            </button>
+            
+            <h1 className=' text-center text-blue-400 text-[30px] font-bold  mb-5  '>
                 Enter Your <br className="block sm:hidden" />
                 <span className='text-orange-300'>Assistant Name</span>
             </h1>
@@ -30,8 +74,8 @@ const Customize2 = () => {
                            md:h-15
                            mt-2
                            outline-none
-                           border-2 border-white
-                           bg-transparent
+                           border-2 border-blue-900
+                           bg-transparent                        
                          text-white
                          placeholder-gray-400
                            px-4 sm:px-5
@@ -44,31 +88,34 @@ const Customize2 = () => {
             className="
             group
             w-[90%]
-            max-w-[320px]
+            max-w-47
             h-12
             sm:h-13
             mt-7
-          bg-orange-100
             rounded-full
-          text-amber-800
-            text-base
-            sm:text-lg
-            md:text-xl
+            bg-linear-to-r from-blue-700 to-blue-1000
+           text-white
             font-semibold
+            text-lg
+            border-2 border-blue-900
             cursor-pointer
-          hover:bg-orange-300
-            shadow-2xl
-          shadow-amber-100
+            shadow-lg shadow-cyan-500/30
+            hover:shadow-cyan-500/50
+            hover:scale-105
+            transition-all duration-100
             flex
             gap-2
             justify-center
             items-center
             mx-auto
              "
-            onClick={() => navigate('/customize2')}>
-            Finally Create Your Assistant
-           <FaArrowRightLong className="text-amber-800 transition-transform 
-                                  duration-300 group-hover:translate-x-1" />
+            disabled={loading} 
+            onClick={() =>{             
+                
+              handleUpdateAssistant()
+             }}>
+           {loading ? "Updating..." : "Save & Continue"}
+          
           </button>
          }       
 
