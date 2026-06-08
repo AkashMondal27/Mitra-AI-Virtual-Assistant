@@ -55,7 +55,11 @@ export const askToAssistant =async (req,res)=>{
        const userName=user.name
        const assistantName=user.assistantName
        const result= await geminiResponse(command,assistantName,userName)
-        
+       if (!result) {
+          return res.status(500).json({
+             response: "Gemini API unavailable or quota exceeded"
+        });
+}
 
        const jsonMatch = result.match(/\{[\s\S]*\}/);
        if(!jsonMatch){
@@ -173,20 +177,14 @@ export const askToAssistant =async (req,res)=>{
             type: "unknown",
             response: "I do not understand your request."
         });
+} 
+
 }
 
+  catch (error) {
+   console.log("ASK ASSISTANT ERROR:", error);
 
-
-
-
-
-
-
-
-
-      
-    }
-    catch (error) {
-         return res.status(500).json({response :"ask assistant error !"})
-    }
-}
+   return res.status(500).json({
+      response: error.message
+   });
+}}

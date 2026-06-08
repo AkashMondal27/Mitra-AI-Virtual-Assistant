@@ -27,6 +27,23 @@ const UserContext = ({ children }) => {
         }
     }
 
+// make  A Funcation for Gemini Respinse 
+const getGemeniResponse=async(command)=>{
+    try {
+        const result= await axios.post(`${serverUrl}/api/user/asktoassistant`,
+            {command},
+            {withCredentials:true})
+        return result.data
+    } catch (error) {
+        console.log("full error : ",error)
+        console.log("Backend Response:", error.response?.data);
+        
+    }
+
+}
+
+
+
     useEffect(()=>{
         handleCurrentUser();
     },[])
@@ -36,7 +53,7 @@ const UserContext = ({ children }) => {
        userData,setUserData,
        frontendImage,setFrontendImage,
        backendImage,setBackendImage,
-       selectedImage,setSelectedImage
+       selectedImage,setSelectedImage,getGemeniResponse
     }
     return (
         <div>
