@@ -59,14 +59,14 @@ export const askToAssistant =async (req,res)=>{
           return res.status(500).json({
              response: "Gemini API unavailable or quota exceeded"
         });
-}
+       }
 
        const jsonMatch = result.match(/\{[\s\S]*\}/);
        if(!jsonMatch){
         return res.status(400).json({response:"sorry i can not understand"})
        }
     
-       const gemResult= JSON.parse(jsonMatch[0])
+       const gemResult= JSON.parse(jsonMatch[0]) // response send to frontend
        const type= gemResult.type
 
        
@@ -77,101 +77,46 @@ export const askToAssistant =async (req,res)=>{
     case "get_date":
         return res.json({
             type,
-            userInput: gemResult.cleanInput,
-            response: `Today's date is ${moment().format("DD/MM/YYYY")}`
+            userInput: gemResult.userInput,
+            response: `Today's date is ${moment().format("MM/DD/YYYY")}`
         });
 
     case "get_time":
         return res.json({
             type,
-            userInput: gemResult.cleanInput,
+            userInput: gemResult.userInput,
             response: `Current time is ${moment().format("hh:mm A")}`
         });
 
     case "get_day":
         return res.json({
             type,
-            userInput: gemResult.cleanInput,
+            userInput: gemResult.userInput,
             response: `Today is ${moment().format("dddd")}`
         });
 
     case "get_month":
         return res.json({
             type,
-            userInput: gemResult.cleanInput,
+            userInput: gemResult.userInput,
             response: `Current month is ${moment().format("MMMM")}`
         });
 
 
-
-    // WEB & MEDIA
     case "google_search":
     case "youtube_search":
     case "youtube_play":
-    case "spotify_play":
-
-    // SOCIAL MEDIA
-    case "instagram_open":
-    case "facebook_open":
-    case "twitter_open":
-    case "linkedin_open":
-
-    // AI TOOLS
-    case "chatgpt_open":
-    case "gemini_open":
-    case "claude_open":
-
-    // SYSTEM APPS
+    case "general":
     case "calculator_open":
-    case "browser_open":
-    case "camera_open":
-    case "gallery_open":
-    case "settings_open":
-    case "file_manager_open":
-
-    // GOOGLE SERVICES
-    case "maps_open":
-    case "gmail_open":
-    case "google_drive_open":
-
-    // WEATHER
+    case "instagram_open":
+    case"facebook_open":
     case "weather_show":
-
-    // SYSTEM CONTROL
-    case "volume_up":
-    case "volume_down":
-    case "volume_mute":
-    case "brightness_up":
-    case "brightness_down":
-    case "system_sleep":
-    case "system_shutdown":
-    case "system_restart":
-
-    // PRODUCTIVITY
-    case "set_alarm":
-    case "set_timer":
-    case "add_reminder":
-    case "create_note":
-
-    // COMMUNICATION
-    case "send_email":
-    case "send_message":
-    case "make_call":
-
-    // CONVERSATION
-    case "general_short":
-    case "general_detailed":
-    case "greeting":
-    case "farewell":
-    case "gratitude":
-
         return res.json({
             type,
-            userInput: gemResult.cleanInput,
-            response: gemResult.response
-        });
-
-
+            userInput:gemResult.userInput,
+            response:gemResult.response,
+        })
+      
     default:
         return res.status(400).json({
             type: "unknown",

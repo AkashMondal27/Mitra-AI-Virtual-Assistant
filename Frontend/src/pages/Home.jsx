@@ -5,13 +5,20 @@ import { IoArrowBackSharp } from "react-icons/io5";
 import { TbLogout2 } from "react-icons/tb";
 import { useNavigate } from 'react-router-dom';
 import axios from 'axios';
+import { useState } from 'react';
+import { useRef } from 'react';
 
 function Home() {
 
   //import the image 
-  const { userData, serverUrl, setUserData,getGemeniResponse} = useContext(userDataContext);
+  const { userData, serverUrl, setUserData, getGemeniResponse } = useContext(userDataContext);
   const navigate = useNavigate();
-
+   
+  //for the listeninng time 
+  const[listening ,setListening ]=useState(false);
+  const isSpeakingRef=useRef(false);
+  const recognitionRef=useRef(null)
+  const synth=window.speechSynthesis;
 
   //Log out funcaton
   const handleLogOut = async () => {
@@ -26,40 +33,191 @@ function Home() {
     }
   }
 
+  const startRecognition=()=>{
+    try {
+      recognitionRef.current?.start();
+      setListening(true);
+    } catch (error) {
+       if(!error.message.includes("start")){
+        console.log("Recognition error : ", error);
+       }
+    }
+  }
 
-  // Voice Recocnize :- What user will say , it will take that sentances/words and convert to text , so that user can see what he said 
+  //make a funcation to speak the  assistant 
+  const speak = (text) => {
+    const utterence = new SpeechSynthesisUtterance(text);  // this class make the text to speech level
 
-  useEffect(() => {
-    const SpeechRecognition = window.SpeechRecognition || window.webkiSpeechRecognition
+    isSpeakingRef.current=true;
+    utterence.onend=()=>{
+      isSpeakingRef.current=false;
+      // recognitionRef.current?.start();
+      startRecognition();
+    }
+    synth.speak(utterence) // make to speech level code to real speech
+
+  }
+
+  // make Funcation to hsadle the command like open youtube etc.
+  const handleCommand = (data) => {
+    const { type, userInput, response } = data;
+      if(type==="general"){
+       speak(response);
+      }
+   
+
+      else if (type === "google_search") {
+        window.open(
+         `https://www.google.com/search?q=${encodeURIComponent(userInput)}`,
+         "_blank"
+        );
+      }
+     else if (type === "youtube_play" || type ==="youtube_search") {
+         window.open(
+         `https://www.youtube.com/results?search_query=${encodeURIComponent(userInput)}`,
+          "_blank"
+      );
+          speak(`Playing ${userInput} on YouTube`);
+      }
+
+      else if (type === "calculator_open") {
+           window.open(
+         "https://www.google.com/search?q=calculator",
+          "_blank"
+        );
+      }
+
+      else if (type === "instagram_open") {
+         window.open("https://www.instagram.com", "_blank");
+      }
+
+      else if (type === "facebook_open") {
+        window.open("https://www.facebook.com", "_blank");
+      }
+
+      else if (type === "weather_show") {
+         window.open(
+          `https://www.google.com/search?q=weather+${encodeURIComponent(userInput)}`,
+          "_blank"
+          );
+      }
+      else if (
+         type === "get_time" ||
+         type === "get_date" ||
+         type === "get_day" ||
+         type === "get_month"
+        ) {
+           speak(response);
+      }
+      else {
+        console.log("Sorry, I couldn't understand that command.")
+          speak("Sorry, I couldn't understand that command.");
+        }
+    }
+   
+
+     // Voice Recocnize :- What user will say , it will take that sentances/words and convert to text , so that user can see what he said 
+
+   useEffect(() => {
+    const SpeechRecognition =   window.SpeechRecognition || window.webkitSpeechRecognition
 
     const recognition = new SpeechRecognition()
     recognition.continuous = true;
     recognition.lang = "en-US"
 
+    
+    recognitionRef.current=recognition
+
+    const isRecognizeRef={current:false}
+
+    const safeRecognition=()=>{
+      if(!isSpeakingRef.current && !isRecognizeRef.current){
+        try {
+          recognition.start();
+          console.log('Recognition requested to start')
+        } catch (error) {
+          if(error.name !="InvalidStateError")
+          console.log("Start error : ".error)
+        }
+      }
+    }
+    
+    recognition.onstart=()=>{
+      console.log("Recognition started");
+      isRecognizeRef.current=true;
+      setListening(true);
+    };
+   
+    recognition.onend=()=>{
+      console.log("recognition ended");
+      isRecognizeRef.current=false;
+      setListening(false);
+
+
+       if(!isSpeakingRef.current){
+      setTimeout(()=>{
+        safeRecognition();
+      },1000);
+     }
+    };
+
+  recognition.onerror=(event)=>{
+    console.warn("recognition error : ",event.error);
+    isRecognizeRef.current=false;
+    setListening(false);
+    if(event.error !="aborted" && !isSpeakingRef.current){
+      setTimeout(()=>{
+        safeRecognition();
+
+      },1000);
+    }
+  }
+   
+
+
     recognition.onresult = async (e) => {  // this will give what user say
       console.log(e)
       const transcript = e.results[e.results.length - 1][0].transcript.trim();
-      console.log("user Words : " + transcript)
+      console.log("user question  : " + transcript)
 
 
       //if we take the Assistant name to comment , then it will send to Gemini to take ans 
       if (transcript.toLowerCase().includes(userData.assistantName.toLowerCase())) {
-         const data= await getGemeniResponse(transcript);
-         console.log(data)
-       }
+
+        recognition.stop;
+        isRecognizeRef.current=false;
+        setListening(false);
+        const data = await getGemeniResponse(transcript);
+        console.log(data);
+        // speak(data.response);
+        handleCommand(data);
+      }
+    }
+     // check every 10 sec that the microphone reconition is strted or not    
+    const fallback=setInterval(()=>{
+      if(!isSpeakingRef.current && !isRecognizeRef.current){
+        safeRecognition();
+      }
+
+    },10000)
+    
+    safeRecognition();
+
+    return()=>{
+      recognition.stop();
+      setListening(false);
+      isRecognizeRef.current=false;
+      clearInterval(fallback)
     }
 
-    recognition.start(); // it will stsrt the microphone 
+   }, [])
 
 
 
 
-  }, [])
 
 
-
-
-  return (
+   return (
     <div className='w-full min-h-screen bg-linear-to-t from-[black] to-[#010b38] flex 
                    justify-center items-center md:py-3 p-0 flex-col gap-4 ' >
 
@@ -135,4 +293,4 @@ function Home() {
   )
 }
 
-export default Home
+export default Home 
