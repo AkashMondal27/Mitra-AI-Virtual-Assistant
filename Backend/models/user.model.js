@@ -21,7 +21,7 @@ const userSchema = new mongoose.Schema(
         assistantGender: {
            type: String,
            enum: ["male", "female"],
-           default: "male"
+           
         },
         assistantImage: {
             type: String

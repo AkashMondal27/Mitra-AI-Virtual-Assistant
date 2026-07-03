@@ -92,14 +92,10 @@ const Customize2 = () => {
                            text-base sm:text-lg"
                  required onChange={(e)=>setAssistantName(e.target.value)} 
                  value={assistantName} />
+                 
             {/*.............................Select Gender.....................................*/}
 
 
-
-{/* <h1 className="text-center text-blue-400 text-[30px] font-bold mb-5 mt-5" >
-  Select <br className="block sm:hidden" />
-  <span className="text-orange-300">Assistant Gender</span>
-</h1> */}
 
 <div className="flex gap-6 mt-8">
 

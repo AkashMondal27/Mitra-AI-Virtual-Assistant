@@ -20,6 +20,34 @@ function Home() {
   const recognitionRef=useRef(null)
   const synth=window.speechSynthesis;
 
+
+ // 👇 this will print all the availabe voices & languages i have in my computer 
+  useEffect(() => {
+    const loadVoices = () => {
+      console.log("Gender:", userData?.assistantGender); // show the gender of Assistant 
+      const voices = window.speechSynthesis.getVoices();
+
+      console.log("Available Voices:");
+
+      voices.forEach((voice, index) => {
+        console.log(index, voice.name, "-", voice.lang);
+      });
+    };
+
+    loadVoices();
+
+    window.speechSynthesis.onvoiceschanged = loadVoices;
+  }, []);
+
+
+
+
+
+
+
+
+
+
   //Log out funcaton
   const handleLogOut = async () => {
     try {
@@ -46,24 +74,92 @@ function Home() {
   }
 
   //make a funcation to speak the  assistant 
-  const speak = (text) => {
-    const utterence = new SpeechSynthesisUtterance(text);  // this class make the text to speech level
+  // const speak = (text) => {
+  //   const utterence = new SpeechSynthesisUtterance(text);  // this class make the text to speech level
         
-    //   utterence.lang='hi-IN';
-    // const voices=window.speechSynthesis.getVoices()
-    //   const hindiVoice=voices.find(v=>v.lang==="hi-IN")
-    //   if(hindiVoice){
-    //     utterence.voice=hindiVoice;
-    //   } 
-    isSpeakingRef.current=true;
-    utterence.onend=()=>{
-      isSpeakingRef.current=false;
-      // recognitionRef.current?.start();
-      startRecognition();
-    }
-    synth.speak(utterence) // make to speech level code to real speech
+  //   //   utterence.lang='hi-IN';
+  //   // const voices=window.speechSynthesis.getVoices()
+  //   //   const hindiVoice=voices.find(v=>v.lang==="hi-IN")
+  //   //   if(hindiVoice){
+  //   //     utterence.voice=hindiVoice;
+  //   //   } 
+  //   isSpeakingRef.current=true;
+  //   utterence.onend=()=>{
+  //     isSpeakingRef.current=false;
+  //     // recognitionRef.current?.start();
+  //     startRecognition();
+  //   }
+  //   synth.speak(utterence) // make to speech level code to real speech
 
+  // }
+
+ 
+
+// Function to make the assistant speak
+const speak = (text) => {
+  const utterance = new SpeechSynthesisUtterance(text);
+
+  // Get all available voices
+  const voices = window.speechSynthesis.getVoices();
+
+  // Select voice based on assistant gender
+  if (userData?.assistantGender === "female") {
+    const femaleVoice =
+      voices.find((v) => v.name.includes("Zira")) ||
+      voices.find((v) => v.name.toLowerCase().includes("female")) ||
+      voices.find((v) => v.name.includes("Heera"));
+
+    if (femaleVoice) {
+      utterance.voice = femaleVoice;
+    }
+
+    utterance.pitch = 1.2; // Slightly higher voice
+  } else {
+    const maleVoice =
+      voices.find((v) => v.name.includes("David")) ||
+      voices.find((v) => v.name.includes("Mark"));
+
+    if (maleVoice) {
+      utterance.voice = maleVoice;
+    }
+
+    utterance.pitch = 0.9; // Slightly deeper voice
   }
+
+  // Common speech settings
+  utterance.rate = 1;
+  utterance.volume = 1;
+
+  // If you want Hindi responses, uncomment the next line
+  utterance.lang = "hi-IN";
+
+  // Stop listening while speaking
+  isSpeakingRef.current = true;
+
+  // Restart listening after speech ends
+  utterance.onend = () => {
+    isSpeakingRef.current = false;
+    startRecognition();
+  };
+
+  // Speak
+  synth.speak(utterance);
+};
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
   // make Funcation to hsadle the command like open youtube etc.
   const handleCommand = (data) => {
