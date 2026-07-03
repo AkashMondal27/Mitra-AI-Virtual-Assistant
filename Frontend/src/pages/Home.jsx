@@ -170,10 +170,12 @@ const speak = (text) => {
    
 
       else if (type === "google_search") {
+
         window.open(
          `https://www.google.com/search?q=${encodeURIComponent(userInput)}`,
          "_blank"
         );
+        speak(`Here is some information about ${userInput} `);
       }
      else if (type === "youtube_play" || type ==="youtube_search") {
          window.open(
