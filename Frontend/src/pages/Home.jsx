@@ -7,6 +7,12 @@ import { useNavigate } from 'react-router-dom';
 import axios from 'axios';
 import { useState } from 'react';
 import { useRef } from 'react';
+import { useCallback } from 'react';
+import aiImg from "../assets/ai.gif"
+import userImg from "../assets/user.gif"
+
+
+
 
 function Home() {
 
@@ -19,6 +25,10 @@ function Home() {
   const isSpeakingRef=useRef(false);
   const recognitionRef=useRef(null)
   const synth=window.speechSynthesis;
+  const[uderText ,setUserText]=useState("");
+  const[aiText ,setAiText]=useState("");
+
+  const isRecognizeRef = useRef(false);
 
 
  // 👇 this will print all the availabe voices & languages i have in my computer 
@@ -38,12 +48,6 @@ function Home() {
 
     window.speechSynthesis.onvoiceschanged = loadVoices;
   }, []);
-
-
-
-
-
-
 
 
 
@@ -95,68 +99,130 @@ function Home() {
 
  
 
+// // Function to make the assistant speak
+// const speak = (text) => {
+//   const utterance = new SpeechSynthesisUtterance(text);
+
+//   // Get all available voices
+//   const voices = window.speechSynthesis.getVoices();
+
+//   // Select voice based on assistant gender
+//   if (userData?.assistantGender === "female") {
+//     const femaleVoice =
+//       voices.find((v) => v.name.includes("Zira")) ||
+//       voices.find((v) => v.name.toLowerCase().includes("female")) ||
+//       voices.find((v) => v.name.includes("Heera"));
+
+//     if (femaleVoice) {
+//       utterance.voice = femaleVoice;
+//     }
+
+//     utterance.pitch = 1.2; // Slightly higher voice
+//   } else {
+//     const maleVoice =
+//       voices.find((v) => v.name.includes("David")) ||
+//       voices.find((v) => v.name.includes("Mark"));
+
+//     if (maleVoice) {
+//       utterance.voice = maleVoice;
+//     }
+
+//     utterance.pitch = 0.9; // Slightly deeper voice
+//   }
+
+//   // Common speech settings
+//   utterance.rate = 1;
+//   utterance.volume = 1;
+
+//   // If you want Hindi responses, uncomment the next line
+//   utterance.lang = "hi-IN";
+
+//   // Stop listening while speaking
+//   isSpeakingRef.current = true;
+
+//   // Restart listening after speech ends
+//   utterance.onend = () => {
+//     isSpeakingRef.current = false;
+//     startRecognition();
+//   };
+
+//   // Speak
+//   synth.speak(utterance);
+// };
+
+
 // Function to make the assistant speak
 const speak = (text) => {
-  const utterance = new SpeechSynthesisUtterance(text);
+  window.speechSynthesis.cancel();
 
-  // Get all available voices
+  const utterance = new SpeechSynthesisUtterance(text);
   const voices = window.speechSynthesis.getVoices();
 
-  // Select voice based on assistant gender
-  if (userData?.assistantGender === "female") {
-    const femaleVoice =
-      voices.find((v) => v.name.includes("Zira")) ||
-      voices.find((v) => v.name.toLowerCase().includes("female")) ||
-      voices.find((v) => v.name.includes("Heera"));
+  let selectedVoice = null;
 
-    if (femaleVoice) {
-      utterance.voice = femaleVoice;
+  // Detect language from the response text
+  if (/[\u0900-\u097F]/.test(text)) {
+    // Hindi
+    utterance.lang = "hi-IN";
+
+    if (userData?.assistantGender === "female") {
+      selectedVoice =
+        voices.find(v => v.name.includes("Kalpana")) ||
+        voices.find(v => v.name.includes("Google हिन्दी"));
+    } else {
+      selectedVoice =
+        voices.find(v => v.name.includes("Hemant")) ||
+        voices.find(v => v.name.includes("Google हिन्दी"));
     }
 
-    utterance.pitch = 1.2; // Slightly higher voice
+  } else if (/[\u0980-\u09FF]/.test(text)) {
+    // Bengali
+    utterance.lang = "bn-IN";
+
+    selectedVoice =
+      voices.find(v => v.lang === "bn-IN");
+
   } else {
-    const maleVoice =
-      voices.find((v) => v.name.includes("David")) ||
-      voices.find((v) => v.name.includes("Mark"));
+    // English
+    utterance.lang = "en-IN";
 
-    if (maleVoice) {
-      utterance.voice = maleVoice;
+    if (userData?.assistantGender === "female") {
+      selectedVoice =
+        voices.find(v => v.name.includes("Heera")) ||
+        voices.find(v => v.name.includes("Zira"));
+    } else {
+      selectedVoice =
+        voices.find(v => v.name.includes("Ravi")) ||
+        voices.find(v => v.name.includes("David")) ||
+        voices.find(v => v.name.includes("Mark"));
     }
-
-    utterance.pitch = 0.9; // Slightly deeper voice
   }
 
-  // Common speech settings
+  if (selectedVoice) {
+    utterance.voice = selectedVoice;
+    console.log("Using voice:", selectedVoice.name);
+  }
+
   utterance.rate = 1;
+  utterance.pitch = userData?.assistantGender === "female" ? 1.15 : 0.95;
   utterance.volume = 1;
 
-  // If you want Hindi responses, uncomment the next line
-  utterance.lang = "hi-IN";
-
-  // Stop listening while speaking
   isSpeakingRef.current = true;
 
-  // Restart listening after speech ends
   utterance.onend = () => {
     isSpeakingRef.current = false;
     startRecognition();
   };
 
-  // Speak
-  synth.speak(utterance);
+  utterance.onerror = (e) => {
+    console.log("Speech Error:", e);
+    isSpeakingRef.current = false;
+    startRecognition();
+  };
+
+  window.speechSynthesis.speak(utterance);
+  // synth.speak(utterance);
 };
-
-
-
-
-
-
-
-
-
-
-
-
 
 
 
@@ -255,9 +321,11 @@ const speak = (text) => {
    
     recognition.onend=()=>{
       console.log("recognition ended");
-      isRecognizeRef.current=false;
-      setListening(false);
-
+      // isRecognizeRef.current=false;
+      // setListening(false);
+     if (isRecognizeRef.current) {
+      recognition.abort();   
+}
 
        if(!isSpeakingRef.current){
       setTimeout(()=>{
@@ -281,6 +349,7 @@ const speak = (text) => {
 
 
     recognition.onresult = async (e) => {  // this will give what user say
+      recognition.stop();
       console.log(e)
       const transcript = e.results[e.results.length - 1][0].transcript.trim();
       console.log("user question  : " + transcript)
@@ -288,14 +357,18 @@ const speak = (text) => {
 
       //if we take the Assistant name to comment , then it will send to Gemini to take ans 
       if ( userData && transcript.toLowerCase().includes(userData.assistantName.toLowerCase())) {
-
+       setAiText("")
+       setUserText(transcript);
+      
         recognition.stop();
         isRecognizeRef.current=false;
         setListening(false);
         const data = await getGemeniResponse(transcript);
         console.log(data);
         // speak(data.response);
+        setAiText(data.response)
         handleCommand(data);
+        setUserText("")
       }
     }
      // check every 10 sec that the microphone reconition is strted or not    
@@ -384,6 +457,8 @@ const speak = (text) => {
 
       </button>
 
+
+
       <div className='md:w-70 w-60 md:h-90 h-90 flex justify-center overflow-hidden items-center rounded-4xl'>
         <img src={userData?.assistantImage} alt="Assistant"
           className='w-full h-full object-cover shadow-lg ' />
@@ -392,7 +467,11 @@ const speak = (text) => {
       <h1 className="text-white font-semibold text-[18px]">
         I am {userData?.assistantName || "your Assistant"}
       </h1>
+        
 
+        {!aiText && <img src={userImg} alt="User"  className='w-50'/>}
+         {aiText && <img src={aiImg} alt="User"  className='w-50'/>}
+       
     </div>
 
   )

@@ -53,12 +53,15 @@ export const askToAssistant =async (req,res)=>{
     try {
         const{command}=req.body
        const user=await User.findById(req.userId); // TAKE USER ID FROM BACKEND DATABASE
+       user.history.push(command) // add the command to the user history
+       await user.save() // save the user history in the database
        const userName=user.name
        const assistantName=user.assistantName
        const result= await geminiResponse(command,assistantName,userName)
        if (!result) {
+       
           return res.status(500).json({
-             response: "Gemini API unavailable or quota exceeded"
+             response: "Gemini API unavailable or quota exceeded . Please try again later."
         });
        }
 
@@ -124,7 +127,7 @@ export const askToAssistant =async (req,res)=>{
             response: "I do not understand your request."
         });
 } 
-
+ 
 }
 
   catch (error) {
