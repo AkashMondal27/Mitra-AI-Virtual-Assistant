@@ -3,7 +3,7 @@
   <br>
   Mitra - AI Virtual Assistant
 </h1>
-> A full-stack AI Virtual Assistant built with the MERN Stack and Google Gemini API. Create your own personalized AI assistant, customize its appearance, and interact with it using voice commands for an intelligent and interactive experience.
+ A full-stack AI Virtual Assistant built with the MERN Stack and Google Gemini API. Create your own personalized AI assistant, customize its appearance, and interact with it using voice commands for an intelligent and interactive experience.
 
 ---
 
