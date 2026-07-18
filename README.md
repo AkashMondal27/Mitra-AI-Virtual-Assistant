@@ -1,6 +1,9 @@
-# 🤖 AI Virtual Assistant
-
-> A full-stack AI Virtual Assistant built with the **MERN Stack** and **Google Gemini API**. Create your own personalized AI assistant, customize its appearance, and interact with it using voice commands for an intelligent and interactive experience.
+<h1 align="center">
+  <img src="./Frontend/public/Mitra.png" alt="Mitra Logo" width="100" />
+  <br>
+  Mitra - AI Virtual Assistant
+</h1>
+ A full-stack AI Virtual Assistant built with the MERN Stack and Google Gemini API. Create your own personalized AI assistant, customize its appearance, and interact with it using voice commands for an intelligent and interactive experience.
 
 ---
 
@@ -92,6 +95,7 @@ The assistant is powered by the **Google Gemini API**, enabling natural conversa
 - CORS
 - Moment.js
 
+## Database
 
 
 ## Artificial Intelligence
@@ -136,55 +140,6 @@ The assistant is powered by the **Google Gemini API**, enabling natural conversa
 - Mobile Application
 - Multi-language Support
 
-
----
-
-# ⚙️ Project Workflow
-
-```text
-User Registration
-        │
-        ▼
-Secure Authentication
-(JWT + Refresh Token)
-        │
-        ▼
-Login
-        │
-        ▼
-Choose Avatar
-or Upload Custom Avatar
-        │
-        ▼
-Choose Assistant Name
-        │
-        ▼
-Choose Assistant Gender
-        │
-        ▼
-Save Assistant Profile
-        │
-        ▼
-Assistant Dashboard
-        │
-        ▼
-User Speaks Assistant Name
-        │
-        ▼
-Voice Recognition
-        │
-        ▼
-Gemini API
-        │
-        ▼
-Generate AI Response
-        │
-        ▼
-Speak Response
-        │
-        ▼
-Perform Browser Actions
-```
 
 ---
 
