@@ -90,9 +90,26 @@ Assistant: হ্যালো, আমি কীভাবে আপনাকে �
     return result.data.candidates[0].content.parts[0].text;
 
     //return the adjuct text 
-  } catch (error) {
-    console.log(error.response?.data || error.message)
-    return null; // Return null if there's an error
-  }
+  } 
+  // catch (error) {
+  //   console.log(error.response?.data || error.message)
+  //   return null; // Return null if there's an error
+  // }
+  catch (error) {
+
+   console.log(error.response?.data || error);
+
+   if (
+      error.response?.status === 429 ||
+      error.message.includes("429") ||
+      error.message.toLowerCase().includes("quota")
+   ) {
+      return {
+         error: "API_LIMIT"
+      };
+   }
+
+   return null;
+}
 }
 export default geminiResponse

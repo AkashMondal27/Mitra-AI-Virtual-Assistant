@@ -1,27 +1,32 @@
-import{v2 as cloudinary} from 'cloudinary'
-import fs from 'fs' ; //use to dlt the result from local storage after uploading to cloudinary
+import { v2 as cloudinary } from 'cloudinary'
+import fs from 'fs'; //use to dlt the result from local storage after uploading to cloudinary
 
-const uploadOnCloudinary=async(filePath)=>{
-  try{cloudinary.config({
-    cloud_name:process.env.CLOUDINARY_CLOUD_NAME,
-    api_key:process.env.CLOUDINARY_API_KEY,
-    api_secret:process.env.CLOUDINARY_API_SECRET
-  })
+const uploadOnCloudinary = async (filePath) => {
+  try {
+    cloudinary.config({
+      cloud_name: process.env.CLOUDINARY_CLOUD_NAME,
+      api_key: process.env.CLOUDINARY_API_KEY,
+      api_secret: process.env.CLOUDINARY_API_SECRET
+    })
 
 
-//upload an image
+    //upload an image
 
-    const uploadResult=  await cloudinary.uploader.upload(filePath)
+    const uploadResult = await cloudinary.uploader.upload(filePath)
     fs.unlinkSync(filePath) //delete the file from local storage after uploading to cloudinary
     return uploadResult.secure_url
-    
-}catch(error){
-     fs.unlinkSync(filePath) //delete the file from local storage if there is an error
-     return res.status(500).json({message:"Error uploading image"})
-    console.error("Error uploading to Cloudinary:",error)
-}
+
+  } catch (error) {
+    console.error("Cloudinary Error:", error);
+
+    if (fs.existsSync(filePath)) {
+      fs.unlinkSync(filePath);
+    }
+
+    return null;
+  }
 };
-export default uploadOnCloudinary ;
+export default uploadOnCloudinary;
 
 /* 
 it will use the cloudinary package to upload images to cloudinary and return the secure url of the uploaded image. 
