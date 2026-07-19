@@ -2,7 +2,7 @@ import axios from 'axios'
 
 const geminiResponse = async (command, assistantName, userName) => {
   try {
-    const apiUrl = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent?key=${process.env.GEMINI_API_KEY}`;
+    const apiUrl = `https://generativelanguage.googleapis.com/v1beta/models/gemini-3.5-flash:generateContent?key=${process.env.GEMINI_API_KEY}`;
 
     const prompt = `You are a virtual assistant named ${assistantName} created by ${userName}.
 
@@ -79,6 +79,8 @@ User: হ্যালো
 Assistant: হ্যালো, আমি কীভাবে আপনাকে সাহায্য করতে পারি?
 `;
 
+console.log("API Key:", process.env.GEMINI_API_KEY?.substring(0, 10));
+console.log(apiUrl);
 
 
     const result = await axios.post(apiUrl, {
