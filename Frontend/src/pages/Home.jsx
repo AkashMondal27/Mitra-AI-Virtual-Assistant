@@ -194,7 +194,10 @@ function Home() {
 
     utterance.onend = () => {
       isSpeakingRef.current = false;
-      startRecognition();
+      setTimeout(()=>{
+        startRecognition();
+      } ,500)
+      
     };
 
     utterance.onerror = (e) => {
