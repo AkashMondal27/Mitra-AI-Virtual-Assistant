@@ -18,7 +18,7 @@ const app = express();
 
 // CORS middleware
 app.use(cors({
-    origin:"http://localhost:5173",
+    origin:"https://mitra-ai-virtual-assistant-1.onrender.com",
     credentials:true
 }))
 
